@@ -1,0 +1,45 @@
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: compile
+        run: echo "hello World"
+
+
+  DeployDev:
+    name: Deploy to Dev
+    if: github.event_name == "pull_request"
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment: 
+      name: Dev
+      url: dev.nrc.no
+    steps:
+      - name : Deploy
+        run: echo "I am deployimng to Dev"
+
+
+  Deploystaging:
+    name: Deploy to staging
+    if: github.event_ref == 'refs/heads/main'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: staging.nrc.no
+    steps:
+      - name: Deploy
+        run: echo " I am deploying to staging"
+
+  DeployProd:
+    name: Deploy to Prod
+    needs: [Deploystaging]
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      url: nrc.no
+    steps:
+      - name: Deploy
+        run: echo " I am deploying to prod"
+
